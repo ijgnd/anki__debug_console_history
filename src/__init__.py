@@ -34,13 +34,11 @@ This add-on incorporates the file fuzzy_panel.py which has this copyright and pe
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 """
 
 import os
 import pickle
 
-from anki.hooks import addHook
 from aqt import gui_hooks
 from aqt import mw
 from aqt.qt import (
@@ -50,8 +48,10 @@ from aqt.qt import (
     QSplitter,
     QPlainTextEdit,
 )
-from aqt.utils import tooltip
-
+from aqt.utils import (
+    getOnlyText,
+    tooltip,
+)
 from .config import gc
 from .fuzzy_panel import FilterDialog
 
@@ -79,8 +79,8 @@ def savedict():
             pickle.dump(mw.recent_debugs, PO)
 
 
-addHook("profileLoaded", loaddict)
-addHook('unloadProfile', savedict)
+gui_hooks.profile_did_open.append(loaddict)
+gui_hooks.profile_will_close.append(savedict)
 
 
 def text_from_dc_instance(dc_instance):
@@ -111,8 +111,15 @@ def history_helper(dc_instance):
 
 
 def save_current(dc_instance):
+    t = ""
+    if gc("debug console: ask for comment before saving", True):
+        user = getOnlyText("Add unique comment to find the snippet later")
+        if user:
+            t = user + '\n'
+            if not user.startswith('#'):
+                t = '#' + t               
     text = text_from_dc_instance(dc_instance)
-    code = text.toPlainText()
+    code = t + text.toPlainText()
     mw.recent_debugs.append(code)
 
 
@@ -121,7 +128,7 @@ def extend_debug_console(dc_instance):
     if cut:
         hist_window = QShortcut(QKeySequence(cut), dc_instance)
         hist_window.activated.connect(lambda d=dc_instance: history_helper(d))
-    cut = gc("debug console: shortcut save", False)
+    cut = gc("debug console: shortcut save", "ctrl+s")
     if cut:
         save = QShortcut(QKeySequence(cut), dc_instance)
         save.activated.connect(lambda d=dc_instance: save_current(d))

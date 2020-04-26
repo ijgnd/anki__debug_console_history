@@ -1,4 +1,5 @@
 {
     "debug console: shortcut save": "ctrl+s",
-    "debug console: shortcut open history window": "ctrl+i"
+    "debug console: shortcut open history window": "ctrl+i",
+    "debug console: ask for comment before saving": true
 } 
