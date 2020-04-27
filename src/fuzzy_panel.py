@@ -1,5 +1,5 @@
 """
-Copyright (c): 2018  Rene Schallner (sublimeless_zk)
+Copyright (c): 2018  Rene Schallner
                2019- ijgnd
     
 This file (fuzzy_panel.py) is free software: you can redistribute it and/or modify
