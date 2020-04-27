@@ -17,12 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-This add-on incorporates the file fuzzy_panel.py which has this copyright and permission notice:
+This add-on uses the file fuzzy_panel.py which has this copyright and permission notice:
 
-    Copyright (c): 2018  Rene Schallner (sublimeless_zk)
+    Copyright (c): 2018  Rene Schallner
                    2019- ijgnd
         
-    fuzzy_panel.py is free software: you can redistribute it and/or modify
+    This file (fuzzy_panel.py) is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
