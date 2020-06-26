@@ -61,6 +61,7 @@ user_files_folder = os.path.join(addon_path, "user_files")
 debug_saved = os.path.join(user_files_folder, "debug_contents.python_pickle")
 
 
+# TODO: one file per profile
 def loaddict():
     if os.path.isfile(debug_saved):
         with open(debug_saved, 'rb') as PO:
@@ -123,7 +124,48 @@ def save_current(dc_instance):
     mw.recent_debugs.append(code)
 
 
+from aqt.qt import (
+    QCursor,
+    QCloseEvent,
+    qconnect,
+)
+def addContextMenu(ev: QCloseEvent, name: str, dc_instance) -> None:
+    ev.accept()
+    frm = mw.debug_diag_form
+    menu = frm.log.createStandardContextMenu(QCursor.pos())
+    menu.addSeparator()
+    if name == "log":
+        a = menu.addAction("Clear Log")
+        a.setShortcuts(QKeySequence("ctrl+l"))
+        qconnect(a.triggered, frm.log.clear)
+    elif name == "text":
+        a = menu.addAction("Clear Code")
+        a.setShortcuts(QKeySequence("ctrl+shift+l"))
+        qconnect(a.triggered, frm.text.clear)
+
+        ## ADDITION
+        hist_window = menu.addAction("Open History Window")
+        cut = gc("debug console: shortcut open history window", "ctrl+i")
+        if cut:
+            hist_window.setShortcuts(QKeySequence(cut))  # doesn't work
+        qconnect(hist_window.triggered, lambda _, d=dc_instance: history_helper(d))
+
+        save = menu.addAction("Save Current")
+        cut = gc("debug console: shortcut save", "ctrl+s")
+        if cut:
+            save.setShortcuts(QKeySequence(cut))  # doesn't work
+        qconnect(save.triggered, lambda _, d=dc_instance: save_current(d))
+    menu.exec(QCursor.pos())
+
+
 def extend_debug_console(dc_instance):
+
+    # OVERWRITE built-in context menu
+    frm = mw.debug_diag_form
+    frm.log.contextMenuEvent = lambda ev: addContextMenu(ev, "log", dc_instance)
+    frm.text.contextMenuEvent = lambda ev: addContextMenu(ev, "text", dc_instance)
+
+
     cut = gc("debug console: shortcut open history window", "ctrl+i")
     if cut:
         hist_window = QShortcut(QKeySequence(cut), dc_instance)
